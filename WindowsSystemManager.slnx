@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="indowsSystemManager.Domain/indowsSystemManager.Domain.csproj" />
+  <Project Path="WindowsSystemManager.API/WindowsSystemManager.API.csproj" />
+  <Project Path="WindowsSystemManager.Application/WindowsSystemManager.Application.csproj" />
+  <Project Path="WindowsSystemManager.Infrastructure/WindowsSystemManager.Infrastructure.csproj" />
+</Solution>
