@@ -76,7 +76,7 @@ namespace WindowsSystemManager.Infrastructure.Services.Processes
                         }
                         else
                         {
-                            // Same process: calculate CPU time difference.
+                            // Same process calculate CPU time difference.
 
                             long cpuTimeDifference =
                                 currentCpuTime -

@@ -14,14 +14,16 @@ namespace WindowsSystemManager.API.Controllers
     {
         private readonly IProcessService _processService;
         private readonly ProcessCpuMonitor _cpuMonitor;
+        private readonly ProcessMemoryMonitor _memoryMonitor;
 
-   
         public ProcessesController(
             IProcessService processService,
-            ProcessCpuMonitor cpuMonitor)
+            ProcessCpuMonitor cpuMonitor,
+            ProcessMemoryMonitor memoryMonitor)
         {
             _processService = processService;
             _cpuMonitor = cpuMonitor;
+            _memoryMonitor = memoryMonitor;
         }
         [HttpGet]
         public Task<List<ProcessDto>> GetProducts()
@@ -69,6 +71,48 @@ namespace WindowsSystemManager.API.Controllers
                 ElapsedSeconds = elapsedSeconds,
                 CpuUsage = $"{cpuUsage:F2}%"
             });
+        }
+
+
+        [HttpGet("test-memory")]
+        public IActionResult TestMemory()
+        {
+            var results = new List<object>();
+
+            foreach (Process process in Process.GetProcesses())
+            {
+                using (process)
+                {
+                    try
+                    {
+                        if (process.Id == 0)
+                            continue;
+
+                        ulong privateWorkingSet =
+                            _memoryMonitor.GetPrivateWorkingSet(process.Id);
+
+                        results.Add(new
+                        {
+                            ProcessId = process.Id,
+                            ProcessName = process.ProcessName,
+                            PrivateWorkingSetBytes = privateWorkingSet,
+                            PrivateWorkingSetMB =
+                                (privateWorkingSet / (1024.0 * 1024.0)).ToString("F2") + " MB"
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        results.Add(new
+                        {
+                            ProcessId = process.Id,
+                            ProcessName = "Unavailable",
+                            Error = ex.Message
+                        });
+                    }
+                }
+            }
+
+            return Ok(results);
         }
     }
 }

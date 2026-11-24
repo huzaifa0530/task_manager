@@ -20,8 +20,14 @@ namespace WindowsSystemManager.Infrastructure
             services.AddSingleton<PowerUsageMonitor>();
             services.AddTransient<ProcessCpuMonitor>();
             services.AddSingleton<ProcessCpuUsageCache>();
+            services.AddSingleton<ProcessMemoryMonitor>();
+            services.AddSingleton<ProcessDiskUsageCache>();
 
+            services.AddSingleton<ProcessDiskEtwMonitor>();
+
+            services.AddHostedService<ProcessDiskBackgroundMonitor>();
             services.AddHostedService<ProcessCpuBackgroundMonitor>();
+
             return services;
         }
     }

@@ -14,16 +14,22 @@ namespace WindowsSystemManager.Infrastructure.Services.Processes
         private readonly ILogger<ProcessService> _logger;
         private readonly PowerUsageMonitor _powerMonitor;
         private readonly ProcessNetworkMonitor _networkMonitor;
-
-
+        private readonly ProcessCpuUsageCache _cpuUsageCache;
+        private readonly ProcessMemoryMonitor _memoryMonitor;
+        private readonly ProcessDiskUsageCache _diskUsageCache;
         public ProcessService(
             ILogger<ProcessService> logger,
             PowerUsageMonitor powerMonitor,
-            ProcessNetworkMonitor networkMonitor)
+            ProcessNetworkMonitor networkMonitor,
+                ProcessCpuUsageCache cpuUsageCache, ProcessMemoryMonitor memoryMonitor, ProcessDiskUsageCache diskUsageCache)
         {
             _logger = logger;
             _powerMonitor = powerMonitor;
             _networkMonitor = networkMonitor;
+            _cpuUsageCache = cpuUsageCache;
+            _memoryMonitor = memoryMonitor;
+            _diskUsageCache = diskUsageCache;
+
         }
 
         //to fetch all the proccess
@@ -70,89 +76,14 @@ namespace WindowsSystemManager.Infrastructure.Services.Processes
 
 
                             // CPU usage calculation
-                            int logicalProcessors = Environment.ProcessorCount;
-                            TimeSpan firstCpuTime = p.TotalProcessorTime;
-                            Stopwatch stopwatch = Stopwatch.StartNew();
-                            //await Task.Delay(500);
-                            TimeSpan secondCpuTime = p.TotalProcessorTime;
-                            stopwatch.Stop();
-                            double elapsedSeconds = stopwatch.Elapsed.TotalSeconds;
-                            double cpuSeconds = (secondCpuTime - firstCpuTime).TotalSeconds;
                             double cpuUsage = 0;
+                            _cpuUsageCache.TryGetCpuUsage(processId, out cpuUsage);
+                            ulong privateWorkingSet =
+     _memoryMonitor.GetPrivateWorkingSet(processId);
+                            var diskRate = _diskUsageCache.GetRates(processId);
+                            double readMBps = diskRate.ReadMBps;
+                            double writeMBps = diskRate.WriteMBps;
 
-                            if (elapsedSeconds > 0 && cpuSeconds >= 0 && logicalProcessors > 0)
-                            {
-                                cpuUsage = (cpuSeconds / (elapsedSeconds * logicalProcessors)) * 100;
-
-                                cpuUsage = Math.Clamp(cpuUsage, 0, 100);
-                            }
-
-                            PerformanceCounterCategory category =
-                                new PerformanceCounterCategory("Process");
-
-
-                            string? instanceName = null;
-
-                            foreach (string instance in category.GetInstanceNames())
-                            {
-                                try
-                                {
-                                    using PerformanceCounter idCounter =
-                                        new PerformanceCounter(
-                                            "Process",
-                                            "ID Process",
-                                            instance,
-                                            true);
-
-                                    if ((int)idCounter.RawValue == p.Id)
-                                    {
-                                        instanceName = instance;
-                                        break;
-                                    }
-                                }
-                                catch (InvalidOperationException)
-                                {
-                                    // PerformanceCounter instance disappeared.
-                                    continue;
-                                }
-                                catch (Win32Exception)
-                                {
-                                    // Windows denied access to this instance.
-                                    continue;
-                                }
-                            }
-
-
-                            double readMBps = 0;
-                            double writeMBps = 0;
-
-                            if (instanceName != null)
-                            {
-                                using PerformanceCounter readCounter =
-                                    new PerformanceCounter(
-                                        "Process",
-                                        "IO Read Bytes/sec",
-                                        instanceName,
-                                        true);
-
-                                using PerformanceCounter writeCounter =
-                                    new PerformanceCounter(
-                                        "Process",
-                                        "IO Write Bytes/sec",
-                                        instanceName,
-                                        true);
-
-                                readCounter.NextValue();
-                                writeCounter.NextValue();
-
-                                //await Task.Delay(1000);
-
-                                double readBytesPerSecond = readCounter.NextValue();
-                                double writeBytesPerSecond = writeCounter.NextValue();
-
-                                readMBps = readBytesPerSecond / (1024 * 1024);
-                                writeMBps = writeBytesPerSecond / (1024 * 1024);
-                            }
 
                             var networkRate = _networkMonitor.GetRate(p.Id);
                             gpuMetrics.TryGetValue(p.Id, out var gpuMetric);
@@ -176,14 +107,14 @@ namespace WindowsSystemManager.Infrastructure.Services.Processes
                             {
                                 ProcessId = p.Id,
                                 ProcessName = p.ProcessName,
-                                MemoryUsage = p.WorkingSet64,
+                                MemoryUsage = (long)privateWorkingSet,
                                 StartTime = p.StartTime,
 
                                 Status = "Running",
                                 CPU = cpuUsage,
 
-                                Memory = (p.WorkingSet64 / (1024.0 * 1024.0))
-                                    .ToString("F2") + " MB",
+                                Memory = (privateWorkingSet / (1024.0 * 1024.0))
+    .ToString("F2") + " MB",
 
                                 Disk = $"Read: {readMBps:F2} MB/s | Write: {writeMBps:F2} MB/s",
 
