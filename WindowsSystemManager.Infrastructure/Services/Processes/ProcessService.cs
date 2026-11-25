@@ -7,6 +7,7 @@ using System.Net.NetworkInformation;
 using System.Timers;
 using WindowsSystemManager.Application.DTOs.Processes;
 using WindowsSystemManager.Application.Interfaces.Processes;
+using WindowsSystemManager.Infrastructure.Services.Processes.Network;
 namespace WindowsSystemManager.Infrastructure.Services.Processes
 {
     public class ProcessService : IProcessService
@@ -73,8 +74,6 @@ namespace WindowsSystemManager.Infrastructure.Services.Processes
                         //release resource using using keyword when this excutue it automaticlaly call dispose 
                         using (p)
                         {
-
-
                             // CPU usage calculation
                             double cpuUsage = 0;
                             _cpuUsageCache.TryGetCpuUsage(processId, out cpuUsage);
@@ -84,16 +83,22 @@ namespace WindowsSystemManager.Infrastructure.Services.Processes
                             double readMBps = diskRate.ReadMBps;
                             double writeMBps = diskRate.WriteMBps;
 
+                            var networkRate = _networkMonitor.GetProcessNetworkRate(p.Id);
+                            double downloadBytesPerSecond =
+                                networkRate.DownloadBytesPerSecond;
+                            double uploadBytesPerSecond =
+                                networkRate.UploadBytesPerSecond;
+                            double totalNetworkBytesPerSecond =
+    downloadBytesPerSecond + uploadBytesPerSecond;
 
-                            var networkRate = _networkMonitor.GetRate(p.Id);
+                            double networkMbps =
+                                (totalNetworkBytesPerSecond * 8) / 1_000_000;
+
+           
+
                             gpuMetrics.TryGetValue(p.Id, out var gpuMetric);
                             double gpuUsage = gpuMetric?.UsagePercentage ?? 0;
 
-                            double downloadBytesPerSecond =
-                                networkRate.DownloadBytesPerSecond;
-
-                            double uploadBytesPerSecond =
-                                networkRate.UploadBytesPerSecond;
 
                             var powerMetric = _powerMonitor.Calculate(
                                 p.Id,
@@ -118,7 +123,8 @@ namespace WindowsSystemManager.Infrastructure.Services.Processes
 
                                 Disk = $"Read: {readMBps:F2} MB/s | Write: {writeMBps:F2} MB/s",
 
-                                Network = $"Download: {downloadBytesPerSecond:F2} B/s | Upload: {uploadBytesPerSecond:F2} B/s",
+                                Network = $"{networkMbps:F1} Mbps ,Download: {downloadBytesPerSecond:F2} B/s | Upload: {uploadBytesPerSecond:F2} B/s",
+
 
                                 GPU = gpuUsage.ToString("F2") + "%",
 

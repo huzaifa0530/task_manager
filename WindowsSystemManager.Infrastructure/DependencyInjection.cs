@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WindowsSystemManager.Application.Interfaces.Processes;
+using WindowsSystemManager.Infrastructure.Services.Network;
 using WindowsSystemManager.Infrastructure.Services.Processes;
+using WindowsSystemManager.Infrastructure.Services.Processes.Network;
 namespace WindowsSystemManager.Infrastructure
 {
     public static class DependencyInjection
@@ -12,10 +14,7 @@ namespace WindowsSystemManager.Infrastructure
                    this IServiceCollection services)
         {
             services.AddScoped<IProcessService, ProcessService>();
-            services.AddSingleton<ProcessNetworkMonitor>();
 
-            services.AddHostedService(sp =>
-                sp.GetRequiredService<ProcessNetworkMonitor>());
 
             services.AddSingleton<PowerUsageMonitor>();
             services.AddTransient<ProcessCpuMonitor>();
@@ -24,6 +23,13 @@ namespace WindowsSystemManager.Infrastructure
             services.AddSingleton<ProcessDiskUsageCache>();
 
             services.AddSingleton<ProcessDiskEtwMonitor>();
+            services.AddSingleton<ProcessNetworkEtwMonitor>();
+            services.AddSingleton<ProcessNetworkUsageCache>();
+            services.AddSingleton<ProcessNetworkRateCalculator>();
+
+            services.AddSingleton<ProcessNetworkMonitor>();
+            services.AddHostedService(provider =>
+                provider.GetRequiredService<ProcessNetworkMonitor>());
 
             services.AddHostedService<ProcessDiskBackgroundMonitor>();
             services.AddHostedService<ProcessCpuBackgroundMonitor>();
