@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Text;
 using WindowsSystemManager.Application.DTOs.Processes;
 
-namespace WindowsSystemManager.Infrastructure.Services.Processes
+namespace WindowsSystemManager.Infrastructure.Services.Processes.Cpu
 {
     public class ProcessCpuBackgroundMonitor : BackgroundService
     {

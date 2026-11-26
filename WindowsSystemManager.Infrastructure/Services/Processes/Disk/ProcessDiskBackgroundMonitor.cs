@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace WindowsSystemManager.Infrastructure.Services.Processes
+namespace WindowsSystemManager.Infrastructure.Services.Processes.Disk
 {
     public sealed class ProcessDiskBackgroundMonitor : BackgroundService
     {

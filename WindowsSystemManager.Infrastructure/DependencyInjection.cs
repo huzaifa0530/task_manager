@@ -5,7 +5,11 @@ using System.Text;
 using WindowsSystemManager.Application.Interfaces.Processes;
 using WindowsSystemManager.Infrastructure.Services.Network;
 using WindowsSystemManager.Infrastructure.Services.Processes;
+using WindowsSystemManager.Infrastructure.Services.Processes.Cpu;
+using WindowsSystemManager.Infrastructure.Services.Processes.Disk;
+using WindowsSystemManager.Infrastructure.Services.Processes.Memory;
 using WindowsSystemManager.Infrastructure.Services.Processes.Network;
+using WindowsSystemManager.Infrastructure.Services.Processes.User;
 namespace WindowsSystemManager.Infrastructure
 {
     public static class DependencyInjection
@@ -34,6 +38,9 @@ namespace WindowsSystemManager.Infrastructure
             services.AddHostedService<ProcessDiskBackgroundMonitor>();
             services.AddHostedService<ProcessCpuBackgroundMonitor>();
 
+            services.AddSingleton<GpuUsageCache>();
+            services.AddHostedService<GpuBackgroundMonitor>();
+            services.AddSingleton<ProcessUserMonitor>();
             return services;
         }
     }

@@ -18,4 +18,8 @@
     <ProjectReference Include="..\WindowsSystemManager.Application\WindowsSystemManager.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Processes\User\NewFolder\" />
+  </ItemGroup>
+
 </Project>

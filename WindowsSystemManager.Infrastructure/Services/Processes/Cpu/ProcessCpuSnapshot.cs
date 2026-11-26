@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WindowsSystemManager.Infrastructure.Services.Processes
+namespace WindowsSystemManager.Infrastructure.Services.Processes.Cpu
 {
     public class ProcessCpuSnapshot
     {

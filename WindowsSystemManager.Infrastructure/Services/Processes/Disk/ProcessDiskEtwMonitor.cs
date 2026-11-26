@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Tracing.Session;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace WindowsSystemManager.Infrastructure.Services.Processes
+namespace WindowsSystemManager.Infrastructure.Services.Processes.Disk
 {
     public sealed class ProcessDiskEtwMonitor
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace WindowsSystemManager.Infrastructure.Services.Processes
+namespace WindowsSystemManager.Infrastructure.Services.Processes.Memory
 {
   
 

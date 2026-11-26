@@ -4,7 +4,8 @@ using Microsoft.Diagnostics.Tracing.StackSources;
 using System.Diagnostics;
 using WindowsSystemManager.Application.DTOs.Processes;
 using WindowsSystemManager.Application.Interfaces.Processes;
-using WindowsSystemManager.Infrastructure.Services.Processes;
+using WindowsSystemManager.Infrastructure.Services.Processes.Cpu;
+using WindowsSystemManager.Infrastructure.Services.Processes.Memory;
 
 namespace WindowsSystemManager.API.Controllers
 {

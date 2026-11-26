@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
-using static WindowsSystemManager.Infrastructure.Services.Processes.ProcessCpuMonitor;
+using static WindowsSystemManager.Infrastructure.Services.Processes.Cpu.ProcessCpuMonitor;
 
-namespace WindowsSystemManager.Infrastructure.Services.Processes
+namespace WindowsSystemManager.Infrastructure.Services.Processes.Memory
 {
     static class ProcessMemoryNativeMethods
     {

@@ -9,7 +9,7 @@ using System.Text;
 using System.Timers;
 using WindowsSystemManager.Application.DTOs.Processes;
 
-namespace WindowsSystemManager.Infrastructure.Services.Processes
+namespace WindowsSystemManager.Infrastructure.Services.Processes.Cpu
 {
     public class ProcessCpuMonitor
     {

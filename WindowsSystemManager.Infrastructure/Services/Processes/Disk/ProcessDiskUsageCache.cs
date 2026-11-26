@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Concurrent;
 
-namespace WindowsSystemManager.Infrastructure.Services.Processes
+namespace WindowsSystemManager.Infrastructure.Services.Processes.Disk
 {
     public sealed class ProcessDiskUsageCache
     {

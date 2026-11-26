@@ -17,6 +17,7 @@ namespace WindowsSystemManager.Application.DTOs.Processes
         public string Network { get; set; } = string.Empty;
         public string GPU { get; set; } = string.Empty;
         public string GPU_engine { get; set; } = string.Empty;
+        public string Power_usage { get; set; } = "Very low";
         public string Power_usage_trend { get; set; } = string.Empty;
         public string username { get; set; } = string.Empty;
 
